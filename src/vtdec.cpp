@@ -1,14 +1,33 @@
 /*
- * VTParse - an implementation of Paul Williams' DEC compatible state machine parser
+ * vtdec
+ * Copyright 2018 Tyler Filla
  *
- * Author: Joshua Haberman <joshua@reverberate.org>
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * This code is in the public domain.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ * Huge thanks to Joshua Haberman for vtparse, the public domain codebase on
+ * which vtdec is built! All third-party contributions made to vtparse are also
+ * assumed to be dedicated to the public domain.
  */
 
 #include "vtparse.h"
 
-void vtparse_init(vtparse_t *parser, vtparse_callback_t cb)
+void vtdec::vtparse_init(vtparse_t* parser, vtparse_callback_t cb)
 {
     parser->state                  = VTPARSE_STATE_GROUND;
     parser->num_intermediate_chars = 0;
@@ -19,7 +38,10 @@ void vtparse_init(vtparse_t *parser, vtparse_callback_t cb)
     parser->utf8Character          = 0;
 }
 
-static void do_action(vtparse_t *parser, vtparse_action_t action, unsigned int ch)
+namespace
+{
+
+void do_action(vtparse_t* parser, vtparse_action_t action, unsigned int ch)
 {
     /* Some actions we handle internally (like parsing parameters), others
      * we hand to our client for processing */
@@ -91,7 +113,7 @@ static void do_action(vtparse_t *parser, vtparse_action_t action, unsigned int c
     }
 }
 
-static void do_state_change(vtparse_t *parser, state_change_t change, unsigned int ch)
+void do_state_change(vtparse_t* parser, state_change_t change, unsigned int ch)
 {
     /* A state change is an action and/or a new state to transition to. */
 
@@ -127,7 +149,9 @@ static void do_state_change(vtparse_t *parser, state_change_t change, unsigned i
     }
 }
 
-void vtparse(vtparse_t *parser, unsigned char *data, unsigned int len)
+} // namespace
+
+void vtdec::vtparse(vtparse_t* parser, unsigned char* data, unsigned int len)
 {
     int i;
     for(i = 0; i < len; i++)
@@ -184,4 +208,3 @@ void vtparse(vtparse_t *parser, unsigned char *data, unsigned int len)
         }
     }
 }
-

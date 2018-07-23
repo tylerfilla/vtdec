@@ -1,46 +1,65 @@
 /*
- * VTParse - an implementation of Paul Williams' DEC compatible state machine parser
+ * vtdec
+ * Copyright 2018 Tyler Filla
  *
- * Author: Joshua Haberman <joshua@reverberate.org>
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * This code is in the public domain.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ * Huge thanks to Joshua Haberman for vtparse, the public domain codebase on
+ * which vtdec is built! All third-party contributions made to vtparse are also
+ * assumed to be dedicated to the public domain.
  */
 
-#ifndef VTPARSE_DOT_H
-#define VTPARSE_DOT_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef VTDEC_VTDEC_H
+#define VTDEC_VTDEC_H
 
 #include "vtparse_table.h"
 
 #define MAX_INTERMEDIATE_CHARS 2
 #define ACTION(state_change) (state_change & 0x0F)
-#define STATE(state_change)  (state_change >> 4)
+#define STATE(state_change) (state_change >> 4)
+
+namespace vtdec
+{
 
 struct vtparse;
 
 typedef void (*vtparse_callback_t)(struct vtparse*, vtparse_action_t, unsigned int);
 
-typedef struct vtparse {
-    vtparse_state_t    state;
+typedef struct vtparse
+{
+    vtparse_state_tstate;
     vtparse_callback_t cb;
-    unsigned char      intermediate_chars[MAX_INTERMEDIATE_CHARS+1];
-    int                num_intermediate_chars;
-    char               ignore_flagged;
-    int                params[16];
-    int                num_params;
-    void*              user_data;
-    int                characterBytes;
-    unsigned int       utf8Character;
-} vtparse_t;
-
-void vtparse_init(vtparse_t *parser, vtparse_callback_t cb);
-void vtparse(vtparse_t *parser, unsigned char *data, unsigned int len);
-
-#ifdef __cplusplus
+    unsigned char intermediate_chars[MAX_INTERMEDIATE_CHARS+1];
+    int num_intermediate_chars;
+    char ignore_flagged;
+    int params[16];
+    int num_params;
+    void* user_data;
+    int characterBytes;
+    unsigned intutf8Character;
 }
-#endif
+vtparse_t;
 
-#endif
+void vtparse_init(vtparse_t* parser, vtparse_callback_t cb);
+
+void vtparse(vtparse_t* parser, unsigned char* data, unsigned int len);
+
+} // namespace vtdec
+
+#endif // #ifndef VTDEC_VTDEC_H
