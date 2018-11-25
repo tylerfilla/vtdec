@@ -28,14 +28,10 @@
 cmake_minimum_required(VERSION 3.4.1)
 project(vtdec)
 
-set(vtdec_INCLUDE_FILES
-        include/vtdec/decoder.h
-        )
-
 set(vtdec_SRC_FILES
         src/decoder.cpp
         )
 
 add_library(vtdec ${vtdec_SRC_FILES})
-set_target_properties(vtdec PROPERTIES CXX_STANDARD 11)
+set_target_properties(vtdec PROPERTIES CXX_STANDARD 17)
 target_include_directories(vtdec PRIVATE include/)
