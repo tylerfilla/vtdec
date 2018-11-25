@@ -9,8 +9,8 @@
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -25,16 +25,17 @@
 # assumed to be dedicated to the public domain.
 #
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.4.1)
 project(vtdec)
 
 set(vtdec_INCLUDE_FILES
-        include/vtdec/vtdec.h
+        include/vtdec/decoder.h
         )
 
 set(vtdec_SRC_FILES
-        src/vtdec.c
+        src/decoder.cpp
         )
 
-add_library(vtdec STATIC ${vtdec_INCLUDE_FILES} ${vtdec_SRC_FILES})
+add_library(vtdec ${vtdec_SRC_FILES})
+set_target_properties(vtdec PROPERTIES CXX_STANDARD 11)
 target_include_directories(vtdec PRIVATE include/)

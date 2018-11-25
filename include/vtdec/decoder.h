@@ -25,8 +25,8 @@
  * assumed to be dedicated to the public domain.
  */
 
-#ifndef VTDEC_VTDEC_H
-#define VTDEC_VTDEC_H
+#ifndef VTDEC_DECODER_H
+#define VTDEC_DECODER_H
 
 #include "vtparse_table.h"
 
@@ -37,6 +37,25 @@
 namespace vtdec
 {
 
+/**
+ * A vt decoder.
+ */
+class Decoder
+{
+public:
+    Decoder();
+
+    Decoder(const Decoder& rhs);
+
+    Decoder(Decoder&& rhs) noexcept;
+
+    ~Decoder();
+
+    Decoder& operator=(const Decoder& rhs);
+
+    Decoder& operator=(Decoder&& rhs) noexcept;
+};
+
 struct vtparse;
 
 typedef void (*vtparse_callback_t)(struct vtparse*, vtparse_action_t, unsigned int);
@@ -45,7 +64,7 @@ typedef struct vtparse
 {
     vtparse_state_tstate;
     vtparse_callback_t cb;
-    unsigned char intermediate_chars[MAX_INTERMEDIATE_CHARS+1];
+    unsigned char intermediate_chars[MAX_INTERMEDIATE_CHARS + 1];
     int num_intermediate_chars;
     char ignore_flagged;
     int params[16];
@@ -62,4 +81,4 @@ void vtparse(vtparse_t* parser, unsigned char* data, unsigned int len);
 
 } // namespace vtdec
 
-#endif // #ifndef VTDEC_VTDEC_H
+#endif // #ifndef VTDEC_DECODER_H
