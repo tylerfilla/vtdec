@@ -20,12 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-# Huge thanks to Joshua Haberman for vtparse, the public domain codebase on
-# which vtdec is built! All third-party contributions made to vtparse are also
-# assumed to be dedicated to the public domain.
+# Huge thanks to Joshua Haberman for vtparse and Paul Williams for the state
+# machine underlying vtdec. All third-party contributions made to vtparse are
+# assumed to have been dedicated to the public domain.
 #
 
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.9)
 project(vtdec)
 
 set(vtdec_SRC_FILES

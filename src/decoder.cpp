@@ -20,12 +20,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * Huge thanks to Joshua Haberman for vtparse, the public domain codebase on
- * which vtdec is built! All third-party contributions made to vtparse are also
- * assumed to be dedicated to the public domain.
+ * Huge thanks to Joshua Haberman for vtparse and Paul Williams for the state
+ * machine underlying vtdec. All third-party contributions made to vtparse are
+ * assumed to have been dedicated to the public domain.
  */
 
 #include <vtdec/decoder.h>
+#include "table.h"
+
+namespace vtdec
+{
+
+Decoder::Decoder() = default;
+
+Decoder::Decoder(const Decoder& rhs) = default;
+
+Decoder::Decoder(Decoder&& rhs) noexcept = default;
+
+Decoder::~Decoder() = default;
+
+Decoder& Decoder::operator=(const Decoder& rhs) = default;
+
+Decoder& Decoder::operator=(Decoder&& rhs) noexcept = default;
+
+} // namespace vtdec
 
 /*
 void vtdec::vtparse_init(vtparse_t* parser, vtparse_callback_t cb)
@@ -38,7 +56,6 @@ void vtdec::vtparse_init(vtparse_t* parser, vtparse_callback_t cb)
     parser->characterBytes         = 1;
     parser->utf8Character          = 0;
 }
-*/
 
 namespace
 {
@@ -106,7 +123,7 @@ void do_action(vtparse_t* parser, vtparse_action_t action, unsigned int ch)
 
 void do_state_change(vtparse_t* parser, state_change_t change, unsigned int ch)
 {
-    /* A state change is an action and/or a new state to transition to. */
+    /* A state change is an action and/or a new state to transition to. * /
 
     vtparse_state_t new_state = STATE(change);
     vtparse_action_t action = ACTION(change);
@@ -118,7 +135,7 @@ void do_state_change(vtparse_t* parser, state_change_t change, unsigned int ch)
          *   1. the exit action of the old state
          *   2. the action associated with the transition
          *   3. the entry action of the new state
-         */
+         * /
 
         vtparse_action_t exit_action = EXIT_ACTIONS[parser->state-1];
         vtparse_action_t entry_action = ENTRY_ACTIONS[new_state-1];
@@ -199,3 +216,4 @@ void vtdec::vtparse(vtparse_t* parser, unsigned char* data, unsigned int len)
         }
     }
 }
+*/

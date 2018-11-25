@@ -20,13 +20,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * Huge thanks to Joshua Haberman for vtparse, the public domain codebase on
- * which vtdec is built! All third-party contributions made to vtparse are also
- * assumed to be dedicated to the public domain.
+ * Huge thanks to Joshua Haberman for vtparse and Paul Williams for the state
+ * machine underlying vtdec. All third-party contributions made to vtparse are
+ * assumed to have been dedicated to the public domain.
  */
 
-#ifndef VTDEC_STATE_H
-#define VTDEC_STATE_H
+#ifndef VTDEC_TABLE_H
+#define VTDEC_TABLE_H
 
 #include <array>
 #include <utility>
@@ -948,7 +948,7 @@ constexpr auto build_action_table()
  * The action table. This table is primarily indexed by the current state and
  * secondarily indexed by the received input code (0 to 0x7f, ENTR, LEAV).
  */
-constexpr auto TABLE = state::detail::build_action_table();
+constexpr auto action_table = state::detail::build_action_table();
 
 } // namespace vtdec
 

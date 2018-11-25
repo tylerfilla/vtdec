@@ -20,25 +20,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * Huge thanks to Joshua Haberman for vtparse, the public domain codebase on
- * which vtdec is built! All third-party contributions made to vtparse are also
- * assumed to be dedicated to the public domain.
+ * Huge thanks to Joshua Haberman for vtparse and Paul Williams for the state
+ * machine underlying vtdec. All third-party contributions made to vtparse are
+ * assumed to have been dedicated to the public domain.
  */
 
 #ifndef VTDEC_DECODER_H
 #define VTDEC_DECODER_H
 
-#include "vtparse_table.h"
-
-#define MAX_INTERMEDIATE_CHARS 2
-#define ACTION(state_change) (state_change & 0x0F)
-#define STATE(state_change) (state_change >> 4)
-
 namespace vtdec
 {
 
 /**
- * A vt decoder.
+ * A VT stream decoder.
  */
 class Decoder
 {
@@ -55,6 +49,18 @@ public:
 
     Decoder& operator=(Decoder&& rhs) noexcept;
 };
+
+} // namespace vtdec
+
+/*
+#include "vtparse_table.h"
+
+#define MAX_INTERMEDIATE_CHARS 2
+#define ACTION(state_change) (state_change & 0x0F)
+#define STATE(state_change) (state_change >> 4)
+
+namespace vtdec
+{
 
 struct vtparse;
 
@@ -80,5 +86,6 @@ void vtparse_init(vtparse_t* parser, vtparse_callback_t cb);
 void vtparse(vtparse_t* parser, unsigned char* data, unsigned int len);
 
 } // namespace vtdec
+*/
 
 #endif // #ifndef VTDEC_DECODER_H
