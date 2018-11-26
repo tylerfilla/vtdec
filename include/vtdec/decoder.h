@@ -28,64 +28,59 @@
 #ifndef VTDEC_DECODER_H
 #define VTDEC_DECODER_H
 
+#include <memory>
+#include <string_view>
+
 namespace vtdec
 {
 
+struct decoder_private;
+
 /**
- * A VT stream decoder.
+ * A stream decoder for DEC-compatible VT escape codes.
  */
-class Decoder
+class decoder
 {
+    /** Private. */
+    std::unique_ptr<decoder_private> m_private;
+
 public:
-    Decoder();
+    decoder();
 
-    Decoder(const Decoder& rhs);
+    decoder(const decoder& rhs);
 
-    Decoder(Decoder&& rhs) noexcept;
+    decoder(decoder&& rhs) noexcept;
 
-    ~Decoder();
+    ~decoder();
 
-    Decoder& operator=(const Decoder& rhs);
+    decoder& operator=(const decoder& rhs);
 
-    Decoder& operator=(Decoder&& rhs) noexcept;
+    decoder& operator=(decoder&& rhs) noexcept;
+
+    /**
+     * @return The current state
+     */
+    int get_state() const;
+
+    /**
+     * Put data into the decoder.
+     *
+     * @param data The data buffer
+     * @param length The data buffer length
+     * @return The number of chars processed
+     */
+    std::size_t put(const char* data, std::size_t length);
+
+    /**
+     * Put data into the decoder.
+     *
+     * @param str The data string
+     * @return The number of chars processed
+     */
+    std::size_t put(std::string_view str)
+    { return put(str.data(), str.length()); }
 };
 
 } // namespace vtdec
-
-/*
-#include "vtparse_table.h"
-
-#define MAX_INTERMEDIATE_CHARS 2
-#define ACTION(state_change) (state_change & 0x0F)
-#define STATE(state_change) (state_change >> 4)
-
-namespace vtdec
-{
-
-struct vtparse;
-
-typedef void (*vtparse_callback_t)(struct vtparse*, vtparse_action_t, unsigned int);
-
-typedef struct vtparse
-{
-    vtparse_state_tstate;
-    vtparse_callback_t cb;
-    unsigned char intermediate_chars[MAX_INTERMEDIATE_CHARS + 1];
-    int num_intermediate_chars;
-    char ignore_flagged;
-    int params[16];
-    int num_params;
-    void* user_data;
-    int characterBytes;
-    unsigned intutf8Character;
-}
-vtparse_t;
-
-void vtparse_init(vtparse_t* parser, vtparse_callback_t cb);
-
-void vtparse(vtparse_t* parser, unsigned char* data, unsigned int len);
-
-} // namespace vtdec
-*/
 
 #endif // #ifndef VTDEC_DECODER_H
