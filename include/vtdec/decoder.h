@@ -57,10 +57,22 @@ public:
 
     decoder& operator=(decoder&& rhs) noexcept;
 
+private:
+    void ingest(int c);
+
+public:
     /**
      * @return The current state
      */
     int get_state() const;
+
+    /**
+     * Put data into the decoder.
+     *
+     * @param c A single character value
+     * @return The number of chars processed
+     */
+    std::size_t put(int c);
 
     /**
      * Put data into the decoder.

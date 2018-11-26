@@ -25,6 +25,8 @@
  * assumed to have been dedicated to the public domain.
  */
 
+#include <numeric>
+
 #include <vtdec/decoder.h>
 #include <vtdec/table.h>
 
@@ -66,15 +68,30 @@ decoder& decoder::operator=(decoder&& rhs) noexcept
     return *this;
 }
 
+void decoder::ingest(int c)
+{
+    // TODO
+}
+
 int decoder::get_state() const
 {
     return m_private->m_state;
 }
 
+std::size_t decoder::put(int c)
+{
+    ingest(c);
+    return 1;
+}
+
 std::size_t decoder::put(const char* data, std::size_t length)
 {
-    // TODO
-    return 0;
+    for (std::size_t i = 0; i < length; ++i)
+    {
+        ingest(data[i]);
+    }
+
+    return length;
 }
 
 } // namespace vtdec
