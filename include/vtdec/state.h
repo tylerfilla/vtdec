@@ -39,6 +39,7 @@ namespace state
 
 enum
 {
+    none = -1,
     ground,
     escape,
     escape_intermediate,
@@ -52,7 +53,7 @@ enum
     dcs_passthrough,
     dcs_ignore,
     osc_string,
-    sos_pm_apc_string
+    sos_pm_apc_string,
 };
 
 } // namespace state
