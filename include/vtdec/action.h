@@ -69,14 +69,6 @@ struct action_traits
 };
 
 /**
- * The index of an action.
- *
- * @tparam ActionIndex The action index
- */
-template<int ActionIndex>
-static constexpr auto action_index = action_traits<ActionIndex>::index;
-
-/**
  * The name of an action.
  *
  * @tparam ActionIndex The action index
@@ -90,7 +82,6 @@ static constexpr auto action_name = action_traits<ActionIndex>::name;
 template<>
 struct action_traits<action::ignore>
 {
-    static constexpr auto index = static_cast<int>(action::ignore);
     static constexpr auto name = "ignore";
 };
 
@@ -100,7 +91,6 @@ struct action_traits<action::ignore>
 template<>
 struct action_traits<action::print>
 {
-    static constexpr auto index = static_cast<int>(action::print);
     static constexpr auto name = "print";
 };
 
@@ -110,7 +100,6 @@ struct action_traits<action::print>
 template<>
 struct action_traits<action::execute>
 {
-    static constexpr auto index = static_cast<int>(action::execute);
     static constexpr auto name = "execute";
 };
 
@@ -120,7 +109,6 @@ struct action_traits<action::execute>
 template<>
 struct action_traits<action::clear>
 {
-    static constexpr auto index = static_cast<int>(action::clear);
     static constexpr auto name = "clear";
 };
 
@@ -130,7 +118,6 @@ struct action_traits<action::clear>
 template<>
 struct action_traits<action::collect>
 {
-    static constexpr auto index = static_cast<int>(action::collect);
     static constexpr auto name = "collect";
 };
 
@@ -140,7 +127,6 @@ struct action_traits<action::collect>
 template<>
 struct action_traits<action::param>
 {
-    static constexpr auto index = static_cast<int>(action::param);
     static constexpr auto name = "param";
 };
 
@@ -150,7 +136,6 @@ struct action_traits<action::param>
 template<>
 struct action_traits<action::esc_dispatch>
 {
-    static constexpr auto index = static_cast<int>(action::esc_dispatch);
     static constexpr auto name = "esc_dispatch";
 };
 
@@ -160,7 +145,6 @@ struct action_traits<action::esc_dispatch>
 template<>
 struct action_traits<action::csi_dispatch>
 {
-    static constexpr auto index = static_cast<int>(action::csi_dispatch);
     static constexpr auto name = "csi_dispatch";
 };
 
@@ -170,7 +154,6 @@ struct action_traits<action::csi_dispatch>
 template<>
 struct action_traits<action::hook>
 {
-    static constexpr auto index = static_cast<int>(action::hook);
     static constexpr auto name = "hook";
 };
 
@@ -180,7 +163,6 @@ struct action_traits<action::hook>
 template<>
 struct action_traits<action::put>
 {
-    static constexpr auto index = static_cast<int>(action::put);
     static constexpr auto name = "put";
 };
 
@@ -190,7 +172,6 @@ struct action_traits<action::put>
 template<>
 struct action_traits<action::unhook>
 {
-    static constexpr auto index = static_cast<int>(action::unhook);
     static constexpr auto name = "unhook";
 };
 
@@ -200,7 +181,6 @@ struct action_traits<action::unhook>
 template<>
 struct action_traits<action::osc_start>
 {
-    static constexpr auto index = static_cast<int>(action::osc_start);
     static constexpr auto name = "osc_start";
 };
 
@@ -210,7 +190,6 @@ struct action_traits<action::osc_start>
 template<>
 struct action_traits<action::osc_put>
 {
-    static constexpr auto index = static_cast<int>(action::osc_put);
     static constexpr auto name = "osc_put";
 };
 
@@ -220,7 +199,6 @@ struct action_traits<action::osc_put>
 template<>
 struct action_traits<action::osc_end>
 {
-    static constexpr auto index = static_cast<int>(action::osc_end);
     static constexpr auto name = "osc_end";
 };
 

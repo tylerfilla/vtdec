@@ -69,14 +69,6 @@ struct state_traits
 };
 
 /**
- * The index of a state.
- *
- * @tparam StateIndex The state index
- */
-template<int StateIndex>
-static constexpr auto state_index = state_traits<StateIndex>::index;
-
-/**
  * The name of a state.
  *
  * @tparam StateIndex The state index
@@ -90,7 +82,6 @@ static constexpr auto state_name = state_traits<StateIndex>::name;
 template<>
 struct state_traits<state::ground>
 {
-    static constexpr auto index = static_cast<int>(state::ground);
     static constexpr auto name = "ground";
 };
 
@@ -100,7 +91,6 @@ struct state_traits<state::ground>
 template<>
 struct state_traits<state::escape>
 {
-    static constexpr auto index = static_cast<int>(state::escape);
     static constexpr auto name = "escape";
 };
 
@@ -110,7 +100,6 @@ struct state_traits<state::escape>
 template<>
 struct state_traits<state::escape_intermediate>
 {
-    static constexpr auto index = static_cast<int>(state::escape_intermediate);
     static constexpr auto name = "escape_intermediate";
 };
 
@@ -120,7 +109,6 @@ struct state_traits<state::escape_intermediate>
 template<>
 struct state_traits<state::csi_entry>
 {
-    static constexpr auto index = static_cast<int>(state::csi_entry);
     static constexpr auto name = "csi_entry";
 };
 
@@ -130,7 +118,6 @@ struct state_traits<state::csi_entry>
 template<>
 struct state_traits<state::csi_param>
 {
-    static constexpr auto index = static_cast<int>(state::csi_param);
     static constexpr auto name = "csi_param";
 };
 
@@ -140,7 +127,6 @@ struct state_traits<state::csi_param>
 template<>
 struct state_traits<state::csi_intermediate>
 {
-    static constexpr auto index = static_cast<int>(state::csi_intermediate);
     static constexpr auto name = "csi_intermediate";
 };
 
@@ -150,7 +136,6 @@ struct state_traits<state::csi_intermediate>
 template<>
 struct state_traits<state::csi_ignore>
 {
-    static constexpr auto index = static_cast<int>(state::csi_ignore);
     static constexpr auto name = "csi_ignore";
 };
 
@@ -160,7 +145,6 @@ struct state_traits<state::csi_ignore>
 template<>
 struct state_traits<state::dcs_entry>
 {
-    static constexpr auto index = static_cast<int>(state::dcs_entry);
     static constexpr auto name = "dcs_entry";
 };
 
@@ -170,7 +154,6 @@ struct state_traits<state::dcs_entry>
 template<>
 struct state_traits<state::dcs_param>
 {
-    static constexpr auto index = static_cast<int>(state::dcs_param);
     static constexpr auto name = "dcs_param";
 };
 
@@ -180,7 +163,6 @@ struct state_traits<state::dcs_param>
 template<>
 struct state_traits<state::dcs_intermediate>
 {
-    static constexpr auto index = static_cast<int>(state::dcs_intermediate);
     static constexpr auto name = "dcs_intermediate";
 };
 
@@ -190,7 +172,6 @@ struct state_traits<state::dcs_intermediate>
 template<>
 struct state_traits<state::dcs_passthrough>
 {
-    static constexpr auto index = static_cast<int>(state::dcs_passthrough);
     static constexpr auto name = "dcs_passthrough";
 };
 
@@ -200,7 +181,6 @@ struct state_traits<state::dcs_passthrough>
 template<>
 struct state_traits<state::dcs_ignore>
 {
-    static constexpr auto index = static_cast<int>(state::dcs_ignore);
     static constexpr auto name = "dcs_ignore";
 };
 
@@ -210,7 +190,6 @@ struct state_traits<state::dcs_ignore>
 template<>
 struct state_traits<state::osc_string>
 {
-    static constexpr auto index = static_cast<int>(state::osc_string);
     static constexpr auto name = "osc_string";
 };
 
@@ -220,7 +199,6 @@ struct state_traits<state::osc_string>
 template<>
 struct state_traits<state::sos_pm_apc_string>
 {
-    static constexpr auto index = static_cast<int>(state::sos_pm_apc_string);
     static constexpr auto name = "sos_pm_apc_string";
 };
 
