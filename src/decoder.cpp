@@ -26,6 +26,7 @@
  */
 
 #include <vtdec/decoder.h>
+#include <vtdec/table.h>
 
 namespace vtdec
 {
