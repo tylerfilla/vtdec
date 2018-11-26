@@ -34,7 +34,7 @@ namespace vtdec
 struct decoder_private
 {
     /** The current state. */
-    int m_state {-1};
+    int m_state {state::none};
 };
 
 decoder::decoder() : m_private {}

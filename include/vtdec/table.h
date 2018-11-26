@@ -649,7 +649,7 @@ static constexpr auto table_build_row()
 }
 
 /**
- * The parse table.
+ * The state transition table.
  */
 static constexpr auto table = std::array {
         table_build_row<state::ground>(),
