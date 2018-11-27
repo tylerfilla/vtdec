@@ -64,10 +64,10 @@ struct table_range
 struct table_predicate
 {
     /** An action to perform. */
-    int action {-1};
+    int action {action::none};
 
     /** A state to which to go. */
-    int target {-1};
+    int target {state::none};
 };
 
 /**
