@@ -1,8 +1,34 @@
+/*
+ * vtdec
+ * Copyright 2018 Tyler Filla
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ * Huge thanks to Joshua Haberman for vtparse and Paul Williams for the state
+ * machine underlying vtdec. All third-party contributions made to vtparse are
+ * assumed to have been dedicated to the public domain.
+ */
+
 #include <iostream>
 
-#include <vtdec/action.h>
-#include <vtdec/decoder.h>
-#include <vtdec/state.h>
+#include <vtdec/decode.h>
+#include <vtdec/processor.h>
 
 static constexpr auto TEST = 1 + R"(
 ]2;nano]1;nano[?1049h[22;0;0t[1;24r(B[m[4l[?7h[39;49m[?1h=[?1h=[?1h=[?25l[39;49m(B[m[H[2J(B[0;1m[37m[44m  GNU nano 3.2[23X[1;38HNew Buffer[K[79G[39;49m(B[m[22;16H(B[0;1m[37m[42m[ Welcome to nano.  For basic help, type Ctrl+G. ][39;49m(B[m
@@ -26,74 +52,16 @@ static constexpr auto TEST = 1 + R"(
 [?1l>[1m[7m%[27m[1m[0m
 )";
 
+struct my_processor : vtdec::processor
+{
+    void passthrough(char32_t c) final
+    {
+        std::cout << c;
+    }
+};
+
 int main()
 {
-    vtdec::decoder dec {};
-
-    // Action callbacks
-    dec.set_cb_act_print([](char c)
-    {
-        std::cout << "PRINT " << c << "\n";
-    });
-    dec.set_cb_act_ctl([](vtdec::decoder::sequence_event event, char c)
-    {
-        switch (event)
-        {
-        case vtdec::decoder::sequence_event::begin:
-            std::cout << "CTL BEGIN\n";
-            break;
-        case vtdec::decoder::sequence_event::end:
-            std::cout << "CTL END\n";
-            break;
-        case vtdec::decoder::sequence_event::put:
-            std::cout << "CTL PUT " << c << "\n";
-            break;
-        }
-    });
-    dec.set_cb_act_dcs([](vtdec::decoder::sequence_event event, char c)
-    {
-        switch (event)
-        {
-        case vtdec::decoder::sequence_event::begin:
-            std::cout << "DCS BEGIN\n";
-            break;
-        case vtdec::decoder::sequence_event::end:
-            std::cout << "DCS END\n";
-            break;
-        case vtdec::decoder::sequence_event::put:
-            std::cout << "DCS PUT " << c << "\n";
-            break;
-        }
-    });
-    dec.set_cb_act_osc([](vtdec::decoder::sequence_event event, char c)
-    {
-        switch (event)
-        {
-        case vtdec::decoder::sequence_event::begin:
-            std::cout << "OSC BEGIN\n";
-            break;
-        case vtdec::decoder::sequence_event::end:
-            std::cout << "OSC END\n";
-            break;
-        case vtdec::decoder::sequence_event::put:
-            std::cout << "OSC PUT " << c << "\n";
-            break;
-        }
-    });
-
-    // Diagnostic callbacks
-    dec.set_cb_diag_action([](int state, int action, char c)
-    {
-        std::cout << "DIAG actn: " << vtdec::get_action_name(action) << "\n";
-    });
-    dec.set_cb_diag_char([](int state, char c)
-    {
-        std::cout << "DIAG char: " << c << "\n";
-    });
-    dec.set_cb_diag_tran([](int current, int target, char c)
-    {
-        std::cout << "DIAG tran: " << vtdec::get_state_name(current) << " -> " << vtdec::get_state_name(target) << "\n";
-    });
-
-    dec.put(TEST);
+    vtdec::decode<my_processor>(TEST);
+    std::cout << "\n";
 }
