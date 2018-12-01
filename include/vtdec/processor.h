@@ -172,6 +172,8 @@ struct processor
     virtual void decode_end(bool cancel)
     {
     }
+
+    virtual ~processor() = default;
 };
 
 } // namespace vtdec
