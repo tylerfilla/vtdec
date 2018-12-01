@@ -37,11 +37,45 @@ namespace vtdec
 struct processor
 {
     /**
-     * Unescaped codepoint passthrough.
+     * Printable codepoint passthrough.
      *
      * @param c The codepoint value
      */
-    virtual void passthrough(char32_t c)
+    virtual void print(char32_t c)
+    {
+    }
+
+    /**
+     * A single-codepoint control has been issued.
+     *
+     * @param c The codepoint value
+     */
+    virtual void ctl(char c)
+    {
+    }
+
+    /**
+     * A control sequence has begun.
+     */
+    virtual void ctl_begin()
+    {
+    }
+
+    /**
+     * A codepoint has arrived as part of a control sequence.
+     *
+     * @param c The codepoint value
+     */
+    virtual void ctl_put(char32_t c)
+    {
+    }
+
+    /**
+     * A control sequence has ended.
+     *
+     * @param cancel True on cancellation, otherwise false
+     */
+    virtual void ctl_end(bool cancel)
     {
     }
 
@@ -97,120 +131,47 @@ struct processor
 
     /**
      * A decode operation has begun.
-     *
-     * Part of the diagnostic callback suite.
      */
-    virtual void diag_decode_begin()
+    virtual void decode_begin()
     {
     }
 
     /**
      * A codepoint has arrived as part of a decode operation.
      *
-     * Part of the diagnostic callback suite.
-     *
      * @param c The codepoint value
      */
-    virtual void diag_decode_put(char32_t c)
+    virtual void decode_put(char32_t c)
+    {
+    }
+
+    /**
+     * An action is about to be performed as part of a decode operation.
+     *
+     * @param act The impending action
+     */
+    virtual void decode_action(int act)
+    {
+    }
+
+    /**
+     * A transition is about to be made as part of a decode operation.
+     *
+     * @param src The source state
+     * @param dst The destination state
+     */
+    virtual void decode_transition(int src, int dst)
     {
     }
 
     /**
      * A decode operation has ended.
      *
-     * Part of the diagnostic callback suite.
-     *
      * @param cancel True on cancellation, otherwise false
      */
-    virtual void diag_decode_end(bool cancel)
+    virtual void decode_end(bool cancel)
     {
     }
-
-    /**
-     * The decoder is about to perform an action.
-     *
-     * Part of the diagnostic callback suite.
-     *
-     * @param act The impending action
-     */
-    virtual void diag_action(int act)
-    {
-    }
-
-    /**
-     * The decoder is about to perform an action due to a state being entered.
-     *
-     * Part of the diagnostic callback suite.
-     *
-     * @param act The impending action
-     * @param reason The state prompting the action
-     */
-    virtual void diag_action_enter(int act, int reason)
-    {
-        // Delegate to catch-all handler
-        diag_action(act);
-    }
-
-    /**
-     * The decoder is about to perform an action due to a state being left.
-     *
-     * Part of the diagnostic callback suite.
-     *
-     * @param act The impending action
-     * @param reason The state prompting the action
-     */
-    virtual void diag_action_leave(int act, int reason)
-    {
-        // Delegate to catch-all handler
-        diag_action(act);
-    }
-
-    /**
-     * The decoder is about to perform an action due to a codepoint having been
-     * received in some state. This action is not due to an entry/leave event.
-     *
-     * Part of the diagnostic callback suite.
-     *
-     * @param act The impending action
-     * @param reason The codepoint prompting the action
-     */
-    virtual void diag_action_char(int act, char32_t reason)
-    {
-        // Delegate to catch-all handler
-        diag_action(act);
-    }
-
-    /**
-     * The decoder is about to make a state transition.
-     *
-     * Part of the diagnostic callback suite.
-     *
-     * @param src The source state
-     * @param dst The destination state
-     * @param reason The codepoint prompting the transition
-     */
-    virtual void diag_transition(int src, int dst, char32_t reason)
-    {
-    }
-
-    /**
-     * @return True if, and only if, diagnostic callbacks are enabled
-     */
-    bool is_diag() const
-    { return m_diag; }
-
-protected:
-    /**
-     * @param p_diag True if, and only if, diagnostic callbacks are enabled
-     */
-    void set_diag(bool p_diag)
-    { m_diag = p_diag; }
-
-private:
-    /**
-     * True if, and only if, diagnostic callbacks are enabled.
-     */
-    bool m_diag = false;
 };
 
 } // namespace vtdec

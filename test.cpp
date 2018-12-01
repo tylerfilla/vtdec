@@ -26,9 +26,7 @@
  */
 
 #include <iostream>
-
 #include <vtdec/decode.h>
-#include <vtdec/processor.h>
 
 static constexpr auto TEST = 1 + R"(
 ]2;nano]1;nano[?1049h[22;0;0t[1;24r(B[m[4l[?7h[39;49m[?1h=[?1h=[?1h=[?25l[39;49m(B[m[H[2J(B[0;1m[37m[44m  GNU nano 3.2[23X[1;38HNew Buffer[K[79G[39;49m(B[m[22;16H(B[0;1m[37m[42m[ Welcome to nano.  For basic help, type Ctrl+G. ][39;49m(B[m
@@ -54,14 +52,84 @@ static constexpr auto TEST = 1 + R"(
 
 struct my_processor : vtdec::processor
 {
-    void passthrough(char32_t c) final
+    void print(char32_t c) final
     {
-        std::cout << c;
+        std::cout << "PRINT " << static_cast<char>(c) << "\n";
+    }
+
+    void ctl(char c) final
+    {
+        std::cout << "CTL SINGLE " << c << "\n";
+    }
+
+    void ctl_begin() final
+    {
+        std::cout << "CTL BEGIN\n";
+    }
+
+    void ctl_put(char32_t c) final
+    {
+        std::cout << "CTL PUT " << static_cast<char>(c) << "\n";
+    }
+
+    void ctl_end(bool cancel) final
+    {
+        std::cout << "CTL END\n";
+    }
+
+    void dcs_begin() final
+    {
+        std::cout << "DCS BEGIN\n";
+    }
+
+    void dcs_put(char32_t c) final
+    {
+        std::cout << "DCS PUT " << static_cast<char>(c) << "\n";
+    }
+
+    void dcs_end(bool cancel) final
+    {
+        std::cout << "DCS END\n";
+    }
+
+    void osc_begin() final
+    {
+        std::cout << "OSC BEGIN\n";
+    }
+
+    void osc_put(char32_t c) final
+    {
+        std::cout << "OSC PUT " << static_cast<char>(c) << "\n";
+    }
+
+    void osc_end(bool cancel) final
+    {
+        std::cout << "OSC END\n";
+    }
+
+    void decode_action(int act) final
+    {
+        std::cout << "do " << vtdec::get_action_name(act) << "\n";
+    }
+
+    void decode_transition(int src, int dst) final
+    {
+        std::cout << vtdec::get_state_name(src) << " -> " << vtdec::get_state_name(dst) << "\n";
     }
 };
 
-int main()
+int main(int argc, char* argv[])
 {
-    vtdec::decode<my_processor>(TEST);
-    std::cout << "\n";
+    try
+    {
+        if (vtdec::decode<my_processor>(TEST).state)
+            throw "incomplete parse";
+    }
+    catch (const char* s)
+    {
+        std::cerr << s << "\n";
+        return 1;
+    }
+
+    return 0;
 }
