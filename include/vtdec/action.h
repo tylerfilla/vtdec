@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * Huge thanks to Joshua Haberman for vtparse and Paul Williams for the action
+ * Huge thanks to Joshua Haberman for vtparse and Paul Williams for the state
  * machine underlying vtdec. All third-party contributions made to vtparse are
  * assumed to have been dedicated to the public domain.
  */

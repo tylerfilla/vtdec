@@ -74,7 +74,7 @@ struct state_traits
  * @tparam StateIndex The state index
  */
 template<int StateIndex>
-static constexpr auto state_name = state_traits<StateIndex>::name;
+inline constexpr auto state_name = state_traits<StateIndex>::name;
 
 /**
  * State: GROUND

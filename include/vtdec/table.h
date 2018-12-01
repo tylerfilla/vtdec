@@ -86,7 +86,7 @@ struct table_row_plan
  * @tparam StateIndex The state index
  */
 template<int StateIndex>
-static constexpr auto table_row_plan_on_enter = table_row_plan<StateIndex>::on_enter;
+inline constexpr auto table_row_plan_on_enter = table_row_plan<StateIndex>::on_enter;
 
 /**
  * A planned predicate to execute on leaving a state.
@@ -94,7 +94,7 @@ static constexpr auto table_row_plan_on_enter = table_row_plan<StateIndex>::on_e
  * @tparam StateIndex The state index
  */
 template<int StateIndex>
-static constexpr auto table_row_plan_on_leave = table_row_plan<StateIndex>::on_leave;
+inline constexpr auto table_row_plan_on_leave = table_row_plan<StateIndex>::on_leave;
 
 /**
  * An array of planned predicates to execute when putting characters in a state.
@@ -102,7 +102,7 @@ static constexpr auto table_row_plan_on_leave = table_row_plan<StateIndex>::on_l
  * @tparam StateIndex The state index
  */
 template<int StateIndex>
-static constexpr auto table_row_plan_on_chars = table_row_plan<StateIndex>::on_chars;
+inline constexpr auto table_row_plan_on_chars = table_row_plan<StateIndex>::on_chars;
 
 /**
  * State-invariant row plan. These predicates are included in all other rows.
