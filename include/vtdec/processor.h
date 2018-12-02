@@ -36,6 +36,8 @@ namespace vtdec
  */
 struct processor
 {
+    virtual ~processor() = default;
+
     /**
      * Printable codepoint passthrough.
      *
@@ -172,8 +174,6 @@ struct processor
     virtual void decode_end(bool cancel)
     {
     }
-
-    virtual ~processor() = default;
 };
 
 } // namespace vtdec

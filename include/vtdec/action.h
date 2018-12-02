@@ -74,7 +74,7 @@ struct action_traits
  * @tparam ActionIndex The action index
  */
 template<int ActionIndex>
-static constexpr auto action_name = action_traits<ActionIndex>::name;
+inline constexpr auto action_name = action_traits<ActionIndex>::name;
 
 /**
  * Action: IGNORE
@@ -214,7 +214,6 @@ constexpr auto get_action_name(int index)
 
     switch (index)
     {
-    default:
     case ignore:
         return action_name<ignore>;
     case print:
@@ -243,6 +242,8 @@ constexpr auto get_action_name(int index)
         return action_name<osc_put>;
     case osc_end:
         return action_name<osc_end>;
+    default:
+        return static_cast<const char*>(nullptr);
     }
 }
 

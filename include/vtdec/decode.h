@@ -66,110 +66,6 @@ enum sequence
     osc,
 };
 
-/**
- * A special proxy processor for substituting printable characters in decode
- * events. This is used for large (i.e. non-ASCII) codepoint support. In theory,
- * the functions in this class should get devirtualized as an optimization.
- *
- * @tparam OrigProc The original processor type
- */
-template<class OrigProc>
-class substitutor : public processor
-{
-    /** The original processor. */
-    OrigProc&& m_proc;
-
-    /** The original printable codepoint. */
-    char32_t m_orig;
-
-public:
-    substitutor(OrigProc&& p_proc, char32_t p_orig)
-            : m_proc {p_proc}
-            , m_orig {p_orig}
-    {
-    }
-
-    void print(char32_t) final
-    {
-        m_proc.passthrough(m_orig);
-    }
-
-    void ctl(char c) final
-    {
-        m_proc.ctl_put(c);
-    }
-
-    void ctl_begin() final
-    {
-        m_proc.ctl_begin();
-    }
-
-    void ctl_put(char32_t) final
-    {
-        m_proc.ctl_put(m_orig);
-    }
-
-    void ctl_end(bool cancel) final
-    {
-        m_proc.ctl_end(cancel);
-    }
-
-    void dcs_begin() final
-    {
-        m_proc.dcs_begin();
-    }
-
-    void dcs_put(char32_t) final
-    {
-        m_proc.dcs_put(m_orig);
-    }
-
-    void dcs_end(bool cancel) final
-    {
-        m_proc.dcs_end(cancel);
-    }
-
-    void osc_begin() final
-    {
-        m_proc.osc_begin();
-    }
-
-    void osc_put(char32_t) final
-    {
-        m_proc.osc_put(m_orig);
-    }
-
-    void osc_end(bool cancel) final
-    {
-        m_proc.osc_end(cancel);
-    }
-
-    void decode_begin() final
-    {
-        m_proc.decode_begin();
-    }
-
-    void decode_put(char32_t) final
-    {
-        m_proc.decode_put(m_orig);
-    }
-
-    void decode_action(int act) final
-    {
-        m_proc.decode_action(act);
-    }
-
-    void decode_transition(int src, int dst) final
-    {
-        m_proc.decode_transition(src, dst);
-    }
-
-    void decode_end(bool cancel) final
-    {
-        m_proc.decode_end(cancel);
-    }
-};
-
 template<class Processor>
 static decode_state do_action(Processor&& p, decode_state s, int act, char c)
 {
@@ -207,7 +103,7 @@ static decode_state do_action(Processor&& p, decode_state s, int act, char c)
             p.osc_end(true);
             break;
         default:
-            throw "illegal sequence";
+            throw std::runtime_error {"illegal sequence"};
         }
 
         // This is our only chance to call the beginnings of certain sequences
@@ -251,7 +147,7 @@ static decode_state do_action(Processor&& p, decode_state s, int act, char c)
             s.sequence = sequence::ctl;
             break;
         default:
-            throw "illegal state";
+            throw std::runtime_error {"illegal state"};
         }
         break;
     case action::param:
@@ -269,7 +165,7 @@ static decode_state do_action(Processor&& p, decode_state s, int act, char c)
         case sequence::idk:
         case sequence::osc:
         default:
-            throw "illegal sequence";
+            throw std::runtime_error {"illegal sequence"};
         }
         break;
     case action::esc_dispatch:
@@ -303,7 +199,6 @@ static decode_state do_action(Processor&& p, decode_state s, int act, char c)
         break;
     case action::osc_end:
         // End operating system command
-        // Begin operating system command
         p.osc_end(false);
         s.sequence = sequence::idk;
         break;
@@ -341,8 +236,11 @@ static decode_state do_transition(Processor&& p, decode_state s, int tgt, char c
     return s;
 }
 
+/**
+ * Internal. Unchecked put of a single-octet codepoint.
+ */
 template<class Processor>
-decode_state put_c(char c, Processor&& p, decode_state s)
+decode_state put(char c, Processor&& p, decode_state s)
 {
     // Look up predicate for this codepoint in this state
     auto& pred = table[s.state][c];
@@ -362,15 +260,21 @@ decode_state put_c(char c, Processor&& p, decode_state s)
     return s;
 }
 
+/**
+ * Internal. Unchecked put of a single-octet codepoint. Overload alias for put.
+ */
 template<class Processor>
-decode_state put(char c, Processor&& p, decode_state s)
+decode_state put_one(char c, Processor&& p, decode_state s)
 {
     p.decode_put(c);
-    return put_c(c, p, s);
+    return put(c, p, s);
 }
 
+/**
+ * Internal. Unchecked put of a 32-bit codepoint.
+ */
 template<class Processor>
-decode_state put(char32_t c, Processor&& p, decode_state s)
+decode_state put_one(char32_t c, Processor&& p, decode_state s)
 {
     p.decode_put(c);
 
@@ -383,16 +287,99 @@ decode_state put(char32_t c, Processor&& p, decode_state s)
     {
         // The codepoint only occupies one octet
         // So, we process it as a single-octet codepoint
-        s = put_c(lsb, p, s);
+        s = put(lsb, p, s);
     }
     else
     {
         // The codepoint occupies more than one octet
         // This is not an active codepoint (i.e. it cannot trigger an action)
 
+        /**
+         * A special proxy processor for substituting printable characters in
+         * decode events. This is used for large (i.e. non-ASCII) codepoint
+         * support.
+         */
+        class substitutor : public processor
+        {
+            /** The original processor. */
+            Processor&& m_proc;
+
+            /** The original printable codepoint. */
+            char32_t m_orig;
+
+        public:
+            substitutor(Processor&& p_proc, char32_t p_orig)
+                    : m_proc {p_proc}
+                    , m_orig {p_orig}
+            {
+            }
+
+            void print(char32_t) final
+            { m_proc.passthrough(m_orig); }
+
+            void ctl(char c) final
+            { m_proc.ctl_put(c); }
+
+            void ctl_begin() final
+            { m_proc.ctl_begin(); }
+
+            void ctl_put(char32_t) final
+            { m_proc.ctl_put(m_orig); }
+
+            void ctl_end(bool cancel) final
+            { m_proc.ctl_end(cancel); }
+
+            void dcs_begin() final
+            { m_proc.dcs_begin(); }
+
+            void dcs_put(char32_t) final
+            { m_proc.dcs_put(m_orig); }
+
+            void dcs_end(bool cancel) final
+            { m_proc.dcs_end(cancel); }
+
+            void osc_begin() final
+            { m_proc.osc_begin(); }
+
+            void osc_put(char32_t) final
+            { m_proc.osc_put(m_orig); }
+
+            void osc_end(bool cancel) final
+            { m_proc.osc_end(cancel); }
+
+            void decode_begin() final
+            { m_proc.decode_begin(); }
+
+            void decode_put(char32_t) final
+            { m_proc.decode_put(m_orig); }
+
+            void decode_action(int act) final
+            { m_proc.decode_action(act); }
+
+            void decode_transition(int src, int dst) final
+            { m_proc.decode_transition(src, dst); }
+
+            void decode_end(bool cancel) final
+            { m_proc.decode_end(cancel); }
+        };
+
         // Pass the large codepoint off as a space character and proxy the results
-        // This takes care of all multi-byte printable codepoints
-        s = put_c<substitutor<Processor>>(' ', {p, c}, s);
+        // This takes care of all printable codepoints more complicated than ASCII
+        s = put(' ', substitutor {p, c}, s);
+    }
+
+    return s;
+}
+
+/**
+ * Internal. Unchecked put over a range of character things.
+ */
+template<class Processor, class InputIter>
+decode_state put_range(InputIter begin, InputIter end, Processor&& p, decode_state s)
+{
+    for (auto i = begin; i != end; ++i)
+    {
+        s = put_one(*i, p, s);
     }
 
     return s;
@@ -415,7 +402,7 @@ decode_state decode(char c, Processor&& proc = {}, decode_state state = {})
     static_assert(std::is_base_of_v<processor, std::decay_t<Processor>>, "parameter 'proc' not a vtdec::processor");
 
     proc.decode_begin();
-    state = detail::put(c, proc, state);
+    state = detail::put_one(c, proc, state);
     proc.decode_end(false);
 
     return state;
@@ -436,7 +423,7 @@ decode_state decode(char32_t c, Processor&& proc = {}, decode_state state = {})
     static_assert(std::is_base_of_v<processor, std::decay_t<Processor>>, "parameter 'proc' not a vtdec::processor");
 
     proc.decode_begin();
-    state = detail::put(c, proc, state);
+    state = detail::put_one(c, proc, state);
     proc.decode_end(false);
 
     return state;
@@ -462,10 +449,7 @@ decode_state decode(InputIter begin, InputIter end, Processor&& proc = {}, decod
     static_assert(std::is_base_of_v<processor, std::decay_t<Processor>>, "parameter 'proc' not a vtdec::processor");
 
     proc.decode_begin();
-    for (auto i = begin; i != end; ++i)
-    {
-        state = detail::put(*i, proc, state);
-    }
+    state = detail::put_range(begin, end, proc, state);
     proc.decode_end(false);
 
     return state;
@@ -486,10 +470,7 @@ decode_state decode(std::string_view str, Processor&& proc = {}, decode_state st
     static_assert(std::is_base_of_v<processor, std::decay_t<Processor>>, "parameter 'proc' not a vtdec::processor");
 
     proc.decode_begin();
-    for (char c : str)
-    {
-        state = detail::put(c, proc, state);
-    }
+    state = detail::put_range(str.begin(), str.end(), proc, state);
     proc.decode_end(false);
 
     return state;
@@ -510,10 +491,7 @@ decode_state decode(std::u32string_view str, Processor&& proc = {}, decode_state
     static_assert(std::is_base_of_v<processor, std::decay_t<Processor>>, "parameter 'proc' not a vtdec::processor");
 
     proc.decode_begin();
-    for (char32_t c : str)
-    {
-        state = detail::put(c, proc, state);
-    }
+    state = detail::put_range(str.begin(), str.end(), proc, state);
     proc.decode_end(false);
 
     return state;

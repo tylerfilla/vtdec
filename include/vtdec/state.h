@@ -214,7 +214,6 @@ constexpr auto get_state_name(int index)
 
     switch (index)
     {
-    default:
     case ground:
         return state_name<ground>;
     case escape:
@@ -243,6 +242,8 @@ constexpr auto get_state_name(int index)
         return state_name<osc_string>;
     case sos_pm_apc_string:
         return state_name<sos_pm_apc_string>;
+    default:
+        return static_cast<const char*>(nullptr);
     }
 }
 
