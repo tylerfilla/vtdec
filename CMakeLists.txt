@@ -25,9 +25,9 @@
 # assumed to have been dedicated to the public domain.
 #
 
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.8)
 project(vtdec)
 
-add_executable(test test.cpp)
-set_target_properties(test PROPERTIES CXX_STANDARD 17)
-target_include_directories(test PRIVATE include)
+add_library(vtdec INTERFACE)
+target_compile_features(vtdec INTERFACE cxx_std_17)
+target_include_directories(vtdec INTERFACE include)

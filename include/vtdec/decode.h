@@ -66,6 +66,9 @@ enum sequence
     osc,
 };
 
+/**
+ * Internal. Carry out an action.
+ */
 template<class Processor>
 static decode_state do_action(Processor&& p, decode_state s, int act, char c)
 {
@@ -207,6 +210,9 @@ static decode_state do_action(Processor&& p, decode_state s, int act, char c)
     return s;
 }
 
+/**
+ * Internal. Carry out a transition.
+ */
 template<class Processor>
 static decode_state do_transition(Processor&& p, decode_state s, int tgt, char c)
 {
